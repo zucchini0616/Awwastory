@@ -1,0 +1,31 @@
+body {
+    background-color: #E0F2FE;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .card {
+    width: 300px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
+  }
+  
+  .form-group label {
+    font-weight: bold;
+  }
+  
+  .btn-primary {
+    background-color: #FF9800;
+    border-color: #FF9800;
+    border-radius: 50px;
+    transition: transform 0.3s ease;
+  }
+  
+  .btn-primary:hover {
+    transform: scale(1.1);
+  }
+  
