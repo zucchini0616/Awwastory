@@ -12,7 +12,7 @@ const userId = localStorage.getItem('UserId');
 console.log('UserId:', userId);
 console.log('StoryId:', storyId);
 
-fetch(`http://13.229.232.201:3004/api/storycontent/${storyId}?userdata=${userId}`)
+fetch(`http://awwadb.c6gaxuia9dpg.ap-southeast-1.rds.amazonaws.com:3004/api/storycontent/${storyId}?userdata=${userId}`)
   .then(response => response.json())
   .then(responseData => {
     // Rest of your code to handle the API response
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const storyId = urlParams.get('storyid');
   console.log('StoryId:', storyId);
 
-  fetch(`http://13.229.232.201:3004/api/storycontent/${storyId}`)
+  fetch(`http://awwadb.c6gaxuia9dpg.ap-southeast-1.rds.amazonaws.com:3004/api/storycontent/${storyId}`)
     .then(response => response.json())
     .then(responseData => {
       const data = responseData.data;
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
    
 
-  fetch('http://13.229.232.201:3004/api/useractivity', {
+  fetch('http://awwadb.c6gaxuia9dpg.ap-southeast-1.rds.amazonaws.com:3004/api/useractivity', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

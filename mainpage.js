@@ -1,4 +1,4 @@
-fetch('http://13.229.232.201:3004/api/Stories')
+fetch('http://awwadb.c6gaxuia9dpg.ap-southeast-1.rds.amazonaws.com:3306/api/Stories')
   .then(response => response.json())
   .then(data => {
     // Check if the 'data' property exists
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log("check",userId)
   if (userId) {
 
-    fetch(`http://13.229.232.201:3004/api/user/${userId}`)
+    fetch(`http://awwadb.c6gaxuia9dpg.ap-southeast-1.rds.amazonaws.com:3306/api/user/${userId}`)
       .then(response => response.json())
       .then(data => {
         if ('data' in data) {

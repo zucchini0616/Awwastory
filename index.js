@@ -1,31 +1,5 @@
 
-  // function login() {
-  //   console.log("0");
-  //   $(document).ready(function() {
-  //      $('#login-form').submit(function(event) {
-  //        event.preventDefault();
-  //        const email = $('#email').val();
-  //        const password = $('#password').val();
-  //        console.log("1");
-  //        $.ajax({
-  //          url: '/login',
-  //          method: 'POST',
-  //          data: JSON.stringify({ Email: email, Password: password }),
-  //          contentType: 'application/json',
-  //          success: function(response) {
-  //            console.log("2");
-  //            window.location.href = 'mainpage.html';
-  //            console.log(response.message);
-  //            // Redirect to another page or perform further actions
-  //          },
-  //          error: function(error) {
-  //            // Login failed
-  //            console.log(error.responseJSON.message);
-  //          }
-  //        });
-  //      });
-  //    });
-  //  }
+
   $(document).ready(function () {
     // Handle login form submission
     $('#login-form').submit(function (event) {
@@ -36,7 +10,7 @@
       console.log(password);
       // Make a POST request to the login endpoint
       $.ajax({
-        url: 'http://13.229.232.201:3004/api/login',
+        url: 'http://awwadb.c6gaxuia9dpg.ap-southeast-1.rds.amazonaws.com:3306/api/login',
         method: 'POST',
         data: {
           Email: email,
