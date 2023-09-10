@@ -36,7 +36,7 @@
       console.log(password);
       // Make a POST request to the login endpoint
       $.ajax({
-        url: 'http://localhost:3004/api/login',
+        url: 'http://13.229.232.201:3004/api/login',
         method: 'POST',
         data: {
           Email: email,

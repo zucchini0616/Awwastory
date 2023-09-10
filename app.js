@@ -196,7 +196,7 @@ module.exports = db4;
 app.use(
     express.urlencoded(),
     cors({
-        origin: ' http://127.0.0.1:8080'
+        origin: ' http://13.229.232.201:8080'
     })
 );
 
