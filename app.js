@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 require("dotenv").config();
-const port = 3004;
 var md5 = require('md5')
 const mysql = require('mysql'); // Import the MySQL module
 const cors = require('cors');
@@ -43,7 +42,7 @@ module.exports = db;
 app.use(
     express.urlencoded(),
     cors({
-        origin: ' http://13.229.232.201:8080'
+        origin: ' http://13.229.232.201:80'
     })
 );
 
@@ -397,4 +396,3 @@ app.post("/api/test", auth, (req, res) => {
 
 
 
-app.listen(port, () => console.log(`API listening on port ${port}!`));

@@ -10,7 +10,7 @@
       console.log(password);
       // Make a POST request to the login endpoint
       $.ajax({
-        url: 'http://awwadb.c6gaxuia9dpg.ap-southeast-1.rds.amazonaws.com:3306/api/login',
+        url: 'http://13.229.232.201/api/login',
         method: 'POST',
         data: {
           Email: email,

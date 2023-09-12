@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-const port = 8080;
+const port = 80;
 app.listen(port, () => {
   console.log(`Server running on http://13.229.232.201:${port}`);
   
