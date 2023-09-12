@@ -1,5 +1,34 @@
 let currentPage = 0;
+function setCanvasDimensions() {
+  const canvasContainer = document.querySelector('.canvas-container');
+  const canvas = document.querySelector('.canvas');
 
+  const aspectRatio = 2560 / 1600; // Your desired aspect ratio
+
+  // Calculate canvas width and height based on the viewport size and aspect ratio
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  let canvasWidth, canvasHeight;
+
+  if (viewportWidth / viewportHeight > aspectRatio) {
+    // Viewport is wider than the aspect ratio
+    canvasWidth = viewportHeight * aspectRatio;
+    canvasHeight = viewportHeight;
+  } else {
+    // Viewport is taller than the aspect ratio
+    canvasWidth = viewportWidth;
+    canvasHeight = viewportWidth / aspectRatio;
+  }
+
+  // Calculate the left position to center the canvas horizontally
+  const canvasLeft = (viewportWidth - canvasWidth) / 2;
+
+  // Set the canvas and container dimensions and position
+  canvasContainer.style.paddingTop = `${(canvasHeight / canvasWidth) * 100}%`;
+  canvas.style.width = `${canvasWidth}px`;
+  canvas.style.height = `${canvasHeight}px`;
+  canvas.style.left = `${canvasLeft}px`;
+}
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const storyId = urlParams.get('storyid');
@@ -23,6 +52,7 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
 
 document.addEventListener('DOMContentLoaded', () => {
   let pages;
+
   const storedPage = localStorage.getItem('currentPage');
   if (storedPage !== null) {
     currentPage = parseInt(storedPage, 10);
@@ -36,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(response => response.json())
     .then(responseData => {
       const data = responseData.data;
-      console.log("story",data);
+      console.log("story", data);
 
       pages = data.map(item => item.content);
       text = data.map(item => item.contenttxt);
@@ -71,7 +101,33 @@ document.addEventListener('DOMContentLoaded', () => {
     gethint();
     getpop();
     radioForm();
+    if (question[currentPage] === null) {
+      nextButton.disabled = false;
+    }
   }
+  // Function to check screen orientation and display/hide the message accordingly
+// Function to check screen orientation and display/hide the message accordingly
+function checkScreenOrientation() {
+  const rotateMessage = document.getElementById('rotate-message');
+  const isMobile = window.matchMedia('(max-width: 767px)').matches;
+  const isLandscape = window.innerWidth > window.innerHeight; // Check if width > height
+
+  if (isMobile && !isLandscape) {
+    // Show the rotate message only in portrait mode on mobile devices
+    rotateMessage.style.display = 'flex';
+  } else {
+    // Hide the rotate message
+    rotateMessage.style.display = 'none';
+  }
+}
+
+// Attach an event listener for orientation change and window resize
+window.addEventListener('orientationchange', checkScreenOrientation);
+window.addEventListener('resize', checkScreenOrientation);
+
+// Call the function initially to check screen orientation
+checkScreenOrientation();
+
 
   function goToNextPage() {
     if (currentPage < pages.length - 1) {
@@ -84,8 +140,12 @@ document.addEventListener('DOMContentLoaded', () => {
         renderPage();
         storeUserProgress();
       }
+    } else {
+      // User has completed the story, display the congratulations page
+
     }
   }
+
 
   function goToPreviousPage() {
     if (currentPage > 0) {
@@ -138,41 +198,42 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   function sendResponseToDatabase(userResponse) {
     // Assuming userResponse contains the data you want to store
-    console.log("imin",userId)
-    console.log("radiovalue=(",userResponse)
-    
+    console.log("imin", userId)
+    console.log("radiovalue=(", userResponse)
+
     const surveydata = {
       user_id: parseInt(userId, 10),
       survey_answers: surveyAnswers, // Send the entire array
     };
-    
-    
-   
 
-  fetch('http://13.229.232.201:3000/api/useractivity', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    
-    },
-    body: JSON.stringify(surveydata), // Send the surveydata object in the request body
-  })
-    .then(response => {
-      console.log("response", surveydata);
-      console.log('Server Response:', response);
-      return response.json();
+
+
+
+    fetch('http://13.229.232.201:3000/api/useractivity', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+
+      },
+      body: JSON.stringify(surveydata), // Send the surveydata object in the request body
     })
-    .then(responseData => {
-      console.log("responseData", surveydata);
-      console.log('Response Data:', responseData);
-    })
-    .catch(error => {
-      console.log("error", surveydata);
-      console.log('Error sending data to the database:', error);
-    });
-    
+      .then(response => {
+        console.log("response", surveydata);
+        console.log('Server Response:', response);
+        return response.json();
+      })
+      .then(responseData => {
+        console.log("responseData", surveydata);
+        console.log('Response Data:', responseData);
+      })
+      .catch(error => {
+        console.log("error", surveydata);
+        console.log('Error sending data to the database:', error);
+      });
+
   }
-  
+
+
   function radioForm() {
     const yourProgress = document.querySelector('.SurveyForm');
     if (question[currentPage] !== null && hint[currentPage] !== null) {
@@ -181,14 +242,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const nextButton = document.querySelector('#next-button');
       const radioYes = createRadioButton(`page-answer`, 'Yes', 1);
       const radioNo = createRadioButton(`page-answer`, 'No', 0);
-  
+
       radioContainer.appendChild(radioYes);
       radioContainer.appendChild(radioNo);
       yourProgress.innerHTML = '';
       yourProgress.appendChild(radioContainer);
-  
+
       nextButton.disabled = true;
-  
+
       const radioButtons = document.querySelectorAll('input[type="radio"]');
       radioButtons.forEach((radio, index) => {
         radio.addEventListener('change', () => {
@@ -204,15 +265,15 @@ document.addEventListener('DOMContentLoaded', () => {
     nextButton.addEventListener('click', () => {
       const radioButtons = document.querySelectorAll('input[type="radio"]');
       let userResponse = null;
-  
+
       radioButtons.forEach(radio => {
- 
+
         if (radio.checked) {
           userResponse = radio.value; // Assuming you have 'value' attribute set for the radio buttons.
-      
+
         }
       });
-  
+
       if (userResponse !== null) {
         // Send userResponse to your database using a fetch request.
         sendResponseToDatabase(userResponse);
@@ -222,39 +283,36 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-  $(document).ready(function () {
-    // Function to toggle the sidebar
-    function toggleSidebar() {
-      $("#sidebar").toggleClass("active");
-      $("#question-button").toggleClass("active");
-    }
-  
-    
-    $("#question-button").on("click", function () {
-      if (
-        question[currentPage] === null &&
-        hint[currentPage] === null &&
-        pop[currentPage] === null
-      ) {
-        goToNextPage();
-      } else {
-        $("#sidebar").toggleClass("active"); // Toggle the "active" class on the sidebar
-        $(this).toggleClass("active");
-      }
-    });
-  
-    // Initially close the sidebar when the page loads
-    $("#sidebar").removeClass("active");
-    $("#question-button").removeClass("active");
-  });
-  
-  $(document).ready(function() {
-    $("#next-button").on("click", function() {
-      $("#sidebar").toggleClass("active");
+  $("#sidebar")
+
+
+  $("#question-button").on("click", function () {
+    if (
+      question[currentPage] === null &&
+      hint[currentPage] === null &&
+      pop[currentPage] === null
+    ) {
+      goToNextPage();
+    } else {
+      $("#sidebar").toggleClass("active"); // Toggle the "active" class on the sidebar
       $(this).toggleClass("active");
-    });
+
+    }
+  });
+  window.addEventListener('resize', setCanvasDimensions);
+
+  // Call the function initially to set canvas dimensions
+  setCanvasDimensions();
+
+});
+
+$(document).ready(function () {
+  $("#next-button").on("click", function () {
+    $("#sidebar").toggleClass("active");
+    $(this).toggleClass("active");
   });
 });
+
 
 function createRadioButton(name, label, value) {
   const radioContainer = document.createElement('div');
@@ -275,7 +333,7 @@ function returntomain() {
   window.location.href = 'mainpage.html';
 }
 
-window.addEventListener('orientationchange', function() {
+window.addEventListener('orientationchange', function () {
   var rotateMessage = document.getElementById('rotate-message');
   var isMobile = window.matchMedia("(max-width: 767px)").matches;
   var isPortrait = window.innerWidth < window.innerHeight;

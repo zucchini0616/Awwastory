@@ -10,6 +10,7 @@ fetch('http://13.229.232.201:3000/api/Stories')
       console.log(stories); // Display the data in the console
 
       // Get the container where you want to display the story cards
+      const container = document.querySelector('.container');
       const storyCardContainer = document.querySelector('.story-selection');
       
       // Create a Bootstrap row element
@@ -71,7 +72,7 @@ fetch('http://13.229.232.201:3000/api/Stories')
       });
 
       // Append the row to the container
-      storyCardContainer.appendChild(row);
+      container.appendChild(row);
     } else {
       // Handle the case where the 'data' property is missing or empty
       console.error('Data property not found or empty:', data);

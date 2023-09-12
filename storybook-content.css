@@ -14,29 +14,19 @@ body {
 #return-button,
 #question-button,
 #homepage,
-#next-button {
+#next-button,
+#dropdownMenuButton {
   bottom: 10px;
-
-  height: 70px;
   background-color: #35303022;
   color: white;
   border: none;
-  border-radius: 130px;
-  font-size: 18px;
-  font-weight: bold;
+  border-radius: 5vw; /* Use 10% of the viewport width for border-radius */
+  padding: 1vh 2vw; /* Use 2% of viewport height for top/bottom padding and 4% of viewport width for left/right padding */
+  font-size: 1.5vw; /* Use 2.5% of the viewport width for font size */
   cursor: pointer;
   transition: transform 0.3s ease;
-  
-
-
-  left: 10px;
-  width: 100px;
-  height: 100px;
-  font-size: 30px;
-
-}
-#dropdownMenuButton{
-  z-index: 999 !important;
+  width: 6vw; /* Use 6% of the viewport width for button width */
+  height: 6vw;
 }
 
 #return-button:hover,
@@ -45,48 +35,8 @@ body {
 #next-button:hover {
   transform: scale(1.1);
 }
-/*
-#homepage {
 
-  float: right;
-  top: 20px;
- 
-  left: 900px;
 
-  width: 50px;
-  height: 50px;
-  font-size: 24px;
-  background-color: #FF8F00;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 999;
-}
-*/
-#question-button {
-  position: absolute;
-  top: 50%;
-    margin-left: 90%;
-  padding: 10px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  right: 0;
-}
-
-#return-button {
-  position: absolute;
-  top: 50%;
-
-  padding: 10px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  right: 0;
-}
 
 
 .progress-bar-container {
@@ -124,33 +74,58 @@ body {
 }
 
 /* */
+/* Default styles for maintaining a 2560:1600 aspect ratio */
 .canvas-container {
   position: relative;
   width: 100%;
-  padding-top: 60.25%;
-  /* 16:9 aspect ratio (9 / 16 * 100) */
-
+  max-width: 100%; /* Ensure the container doesn't exceed the screen width */
+  padding-top: 62.5%; /* 1600 / 2560 * 100 */
+  background-color: #E0F2FE; /* Set the desired background color */
+  border-radius: 10px;
+  overflow: hidden; /* Hide any overflow */
 }
 
 .canvas {
-  /* display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh; */
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  /* Adjust the height percentage as desired */
-  max-width: 100%;
-  max-height: 100%;
-  background-color: white;
+  width: auto; /* Set width to auto to maintain intrinsic size */
+  height: auto; /* Set height to auto to maintain intrinsic size */
+  max-width: 100%; /* Ensure it doesn't exceed the container's width */
+  max-height: 100%; /* Ensure it doesn't exceed the container's height */
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
-  /* margin-left: 9%;
-  margin-right: 9%; */
 }
+
+
+#dropdown {
+  position: absolute;
+  top: 10px; /* Adjust the top position as needed */
+  right: 10px; /* Adjust the right position as needed */
+  z-index: 999; /* Ensure it's above other content */
+}
+
+#dropdownMenuButton {
+  background-color: #FF8F00;
+  border-radius: 130px !important;
+}
+
+#return-button {
+  position: absolute;
+  top: 45%;
+  left: 10px; /* Adjust as needed */
+  padding: 0.5vh 1vw; /* Reduce padding for smaller button */
+  right: 1vw;
+}
+
+#question-button {
+  position: absolute;
+  top: 45%;
+  right: 10px !important; /* Adjust as needed */
+  padding: 0.5vh 1vw; /* Reduce padding for smaller button */
+  right: 1vw;
+}
+
 
 .canvas img {
   width: 100%;
@@ -278,22 +253,22 @@ a:focus {
 .wrapper {
   display: flex;
   align-items: stretch;
-  height: 100%;
+  height: 100vh; /* Set the height to 100vh to make it fill the viewport height */
+  overflow: hidden; /* Hide the overflow */
 }
+
 
 #sidebar {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 250px;
-  height: 100%;
+  width: 20%; 
   background-color: #7386D5;
   color: #fff;
   transition: all 0.3s;
   z-index: 999;
   overflow-y: auto;
-  /* display: none;  */
+  height: 100%;
 }
+
 
 
 #sidebar a,
@@ -395,18 +370,15 @@ a.article:hover {
   font-size: 38px !important;
 }
 
-/* ---------------------------------------------------
-    CONTENT STYLE
------------------------------------------------------ */
+
 
 #content {
-  margin-left: 80px;
-  margin-right: 80px;
+  width: 75%; /* Adjust the width as needed for your content */
   padding-top: 20px;
   padding-bottom: 20px;
-  min-height: 100vh;
+  min-height: 100%; /* Set min-height to 100% to fill the available space */
   transition: all 0.3s;
-  min-width: 80%;
+  min-width: calc(100% - 25%); /* Adjust the min-width accordingly */
   align-items: center;
 }
 
@@ -425,7 +397,28 @@ a.article:hover {
   margin-top: 20%;
 }
 
-/* #rotate-message {
+
+
+.form-check-label{
+  margin-left: 20%;
+}
+.question,.pop{
+  font-size: 18px;
+}
+/* Set the 2560x1600 (16:10) aspect ratio */
+.canvas-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%; /* Ensure the container doesn't exceed the screen width */
+  padding-top: 62.5%; /* 1600 / 2560 * 100 */
+  background-color: #E0F2FE; /* Set the desired background color */
+  border-radius: 10px;
+  overflow: hidden; /* Hide any overflow */
+}
+/* CSS for the Congratulations Page */
+
+/* Rotate Phone Message */
+#rotate-message {
   display: none;
   position: fixed;
   top: 0;
@@ -433,37 +426,21 @@ a.article:hover {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.8);
+  color: white;
   z-index: 9999;
-  color: #fff;
-  font-size: 24px;
-  text-align: center;
-  align-items: center;
   justify-content: center;
-  display: flex;
+  align-items: center;
 }
 
-@media (max-width: 768px) {
-  #rotate-message {
-    display: flex;
-  }
-} */
-.dropdown-top-right {
-  float: right;
-  position: fixed;
-  top: 20px;
-  right: 20px;
-}
-.btn-warning  {
-  width: 70px;
-  height: 70px;
-  margin-left:100%;
-  border-radius: 130px !important;
-  z-index: 999 !important;
+#rotate-message-content {
+  text-align: center;
 }
 
-.form-check-label{
-  margin-left: 20%;
+#rotate-message h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
 }
-.question,.pop{
+
+#rotate-message p {
   font-size: 18px;
 }

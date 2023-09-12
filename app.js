@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 require("dotenv").config();
-const port = 3004;
+const port = 3000;
 var md5 = require('md5')
 var sqlite3 = require('sqlite3').verbose()
 const cors = require('cors');
@@ -36,6 +36,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             (err) => {
                 if (err) {
                     console.log("where r you2")
+                    
                     // Table already created
                 } else {
                     // Table just created, creating some rows
@@ -148,7 +149,7 @@ app.use(
 app.get('/', (req, res) => res.send('API Root'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(cors())
 //*  G E T   A L L
 
 app.get("/api/users", (req, res, next) => {

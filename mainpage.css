@@ -11,6 +11,7 @@ body {
     text-align: right;
     width: 100%;  
     position: fixed;
+    z-index: 99;
   }
   
   .profile-photo {
@@ -36,8 +37,8 @@ body {
   
   .header h1 {
     color: white;
-    font-size: 75px;
-    margin: 0;
+    font-size: 50px;
+    margin-top: 15px;
     flex-grow: 1;
   }
   
@@ -54,21 +55,25 @@ body {
     padding: 10px;
     text-align: center;
     color: white;
-    bottom: 0;
+    border-radius: 30px 30px 0 0;
+    position: absolute; 
+    bottom: 0; 
     left: 0;
     width: 100%;
-    border-radius: 30px 30px 0 0;
   }
   
-  .story-selection {
+  /* .story-selection {
     display: flex;
     justify-content: center;
     align-items: center;
     height: calc(100vh - 180px);
   }
-  
+  */
+  .container{
+  margin-top:5%;
+  }
   .card {
-
+ 
     background-color: #FFF;
     border-radius: 10px;
     margin: 5px;

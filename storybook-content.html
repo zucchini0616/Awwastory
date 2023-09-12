@@ -22,7 +22,7 @@
   <div class="wrapper">
 
     <!-- Sidebar Holder -->
-    <nav id="sidebar">
+    <nav id="sidebar" class="active">
       <div class="sidebar-header">
         <h3>Try this Question!</h3>
 
@@ -39,36 +39,13 @@
         <div class="pop">
         </div>
         <div class="SurveyForm">
-        <!-- <div class="form-check">
-          <input type="radio" class="form-check-input" id="validationFormCheck2" name="radio-stacked" required>
-          <label class="form-check-label" for="validationFormCheck2">Yes</label>
-        </div> -->
-        <!-- <div class="form-check mb-3">
-          <input type="radio" class="form-check-input" id="validationFormCheck3" name="radio-stacked" required>
-          <label class="form-check-label" for="validationFormCheck3">No</label>
-          <div class="invalid-feedback">Please select an option.</div>
-        </div> -->
+
       </div>
       <button class="btn btn-primary" type="submit" id="next-button" disabled>Next</button>
     </form>
     </nav>
 
-    <!-- Page Content Holder -->
-    <div id="content">
-      <div class="dropdown dropdown-top-right ">
-          <button class="btn btn-warning btn-floating dropdown-toggle " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            
-        </button>
-        <div class="dropdown-menu">
-          <a class="dropdown-item  btn-floating" id="go-to-first-page" href="#">first page</a>
-          
-          <a class="dropdown-item  btn-floating" href="#" onclick="returntomain()">save & exit</a>
-        </div>
-      </div>
-      <!-- <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
-       
-        <span>?</span> -->
-      <!-- </button> -->
+
       <div class="container-fluid">
 
 
@@ -84,26 +61,36 @@
 
         <div class="canvas-container">
           <div class="canvas"></div>
-          
+          <div id="dropdown" class="dropdown">
+            <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <!-- Add your dropdown button content here, e.g., an icon -->
+            </button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item  btn-floating" id="go-to-first-page" href="#">first page</a>
+              <a class="dropdown-item  btn-floating" href="#" onclick="returntomain()">save & exit</a>
+            </div>
+          </div>
+
+        </div>
+        
           <button type="button" id="return-button"><</button>
 
           <button type="button" id="question-button">></button>
-  
+   
+
           </div>
 
+          
        
       </div>
-     
-    </div>
-  </div>
-  </div>
-  </div>
-  </div>
-  <!-- <div id="rotate-message">
-    <p>Please rotate your device to landscape mode.</p>
-  </div>  -->
+      <div id="rotate-message">
+        <div id="rotate-message-content">
+          <h1>Please Rotate Your Phone</h1>
+          <p>This website is best viewed in landscape mode.</p>
+        </div>
+      </div>
+      
 
-  </div>
 
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script> <!-- Include jQuery -->
   <script src="storybook-content.js"></script> <!-- Your custom JavaScript code -->
