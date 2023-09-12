@@ -1,5 +1,4 @@
 
-
   $(document).ready(function () {
     // Handle login form submission
     $('#login-form').submit(function (event) {
@@ -10,7 +9,7 @@
       console.log(password);
       // Make a POST request to the login endpoint
       $.ajax({
-        url: 'http://13.229.232.201/api/login',
+        url: 'http://13.229.232.201:3000/api/login',
         method: 'POST',
         data: {
           Email: email,

@@ -1,48 +1,147 @@
 const express = require('express');
 const app = express();
 require("dotenv").config();
+const port = 3004;
 var md5 = require('md5')
-const mysql = require('mysql'); // Import the MySQL module
+var sqlite3 = require('sqlite3').verbose()
 const cors = require('cors');
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
-// const DBSOURCE = "usersdb.sqlite";
+const DBSOURCE = "usersdb.sqlite";
 
 const auth = require("./middleware");
 
-const db = mysql.createConnection({
-    host: 'awwadb.c6gaxuia9dpg.ap-southeast-1.rds.amazonaws.com',
-    user: 'admin',
-    password: 'g5207196n',
-    database: 'usersdb',
-    port: 3306
-  });
-  
-  // Connect to the database
-  db.connect((err) => {
+let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
-      console.error('Error connecting to MySQL database:', err.message);
-      throw err;
+        // Cannot open database
+        console.error(err.message)
+        throw err
     }
-    console.log('Connected to MySQL database!');
-  });
+    else {
+        var salt = bcrypt.genSaltSync(10);
 
-  process.on('SIGINT', () => {
-    db.end((err) => {
-      if (err) {
-        console.error('Error closing MySQL database connection:', err.message);
-      }
-      process.exit();
+        console.log("where r you 1")
+        db.run(`CREATE TABLE Users (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            Username text, 
+            Email text, 
+            Password text,
+            Lvl int,
+            Profilepic BLOB,             
+            Salt text,    
+            Token text,
+            DateLoggedIn DATE,
+            DateCreated DATE
+            )`,
+            (err) => {
+                if (err) {
+                    console.log("where r you2")
+                    // Table already created
+                } else {
+                    // Table just created, creating some rows
+                    console.log("where r you")
+                    var insert = 'INSERT INTO Users (Username, Email, Password,Lvl,Profilepic, Salt, DateCreated) VALUES (?,?,?,?,?,?,?)'
+                    db.run(insert, ["user1", "user1@example.com", bcrypt.hashSync("user1password", salt),1,"",salt, Date('now')])
+                    db.run(insert, ["user2", "user2@example.com", bcrypt.hashSync("user2password", salt),1,"", salt, Date('now')])
+                    db.run(insert, ["user3", "user3@example.com", bcrypt.hashSync("user3password", salt),2,"", salt, Date('now')])
+                    db.run(insert, ["user4", "user4@example.com", bcrypt.hashSync("user4password", salt),3,"", salt, Date('now')])
+                }
+            });}});
+let db2 = new sqlite3.Database(DBSOURCE, (err) => {
+    if (err) {
+        // Cannot open database
+        console.error(err.message)
+        throw err
+    }
+    else {
+      
+        db2.run(`
+        CREATE TABLE IF NOT EXISTS Stories (
+            storyid INTEGER PRIMARY KEY AUTOINCREMENT,
+            storyname TEXT,
+            storydescription TEXT,
+            coverpage BLOB
+        )
+        `,
+            (err) => {
+                if (err) {
+                    console.log("hihi come here")
+                    // Table already created
+                } else {
+                 
+                    
+                    
+                }
+            });
+    }
+});
+let db3 = new sqlite3.Database(DBSOURCE, (err) => {
+    if (err) {
+        // Cannot open database
+        console.error(err.message);
+        throw err;
+    } else {
+        db2.run(`
+        CREATE TABLE IF NOT EXISTS Questions (
+            Questionid INTEGER PRIMARY KEY AUTOINCREMENT,
+            QuestionNofk INTEGER,
+            question TEXT,
+            answer TEXT,
+            difficulties INTEGER,
+            FOREIGN KEY (QuestionNofk) REFERENCES Storycontent(questionid)
+        )
+    `,
+    (err) => {
+        if (err) {
+            console.log("Error creating Questions table:", err.message);
+        } else {
+     
+        }
     });
-  });
+    }
+});
+
+let db4 = new sqlite3.Database(DBSOURCE, (err) => {
+    if (err) {
+        // Cannot open database
+        console.error(err.message);
+        throw err;
+    } else {
+        db4.run(`
+            CREATE TABLE IF NOT EXISTS Storycontent (
+                pageid INTEGER PRIMARY KEY AUTOINCREMENT,
+                storyid INTEGER,                
+                content BLOB,
+                contenttxt TEXT,
+                questionid INTEGER,
+                FOREIGN KEY (storyid) REFERENCES Stories(storyid)
+                FOREIGN KEY (questionid) REFERENCES Questions(questionid)
+                
+            )
+        `,
+        (err) => {
+            if (err) {
+                console.log("Error creating Storycontent table:", err.message);
+            } else {
+
+                
+            }
+        });
+    }
+});
+
+
 
 module.exports = db;
+module.exports = db2;
+module.exports = db3;
+module.exports = db4;
 
 
 app.use(
     express.urlencoded(),
     cors({
-        origin: ' http://13.229.232.201:80'
+        origin: ' http://127.0.0.1:8080'
     })
 );
 
@@ -153,24 +252,7 @@ app.get("/api/Questions/:QuestionNofk/:difficulties", (req, res) => {
         })
     });
 })
-// app.get('/api/Questions/:QuestionNofk/', (req, res) => {
-//     const QuestionNofk = req.query.QuestionNofk;
-//     const difficulties = req.query.difficulties;
-    
-//     const sql = 'SELECT * FROM Questions WHERE QuestionNofk = ? ';
-    
-//     db.all(sql, [QuestionNofk, difficulties], (err, rows) => {
-//       if (err) {
-//         res.status(400).json({ "error": err.message });
-//         return;
-//       }
-      
-//       res.json({
-//         "message": "success",
-//         "data": rows
-//       });
-//     });
-//   });
+
 
 app.get("/api/storycontent", (req, res, next) => {
     var sql = "SELECT * FROM Storycontent"
@@ -203,74 +285,7 @@ app.get("/api/storycontent/:storyid", (req, res) => {
     });
 })
 
-// * R E G I S T E R   N E W   U S E R
 
-// app.post("/api/register", async (req, res) => {
-//     var errors = []
-//     try {
-//         const { Username, Email, Password } = req.body;
-
-//         if (!Username) {
-//             errors.push("Username is missing");
-//         }
-//         if (!Email) {
-//             errors.push("Email is missing");
-//         }
-//         if (errors.length) {
-//             res.status(400).json({ "error": errors.join(",") });
-//             return;
-//         }
-//         let userExists = false;
-
-
-//         var sql = "SELECT * FROM Users WHERE Email = ?"
-//         await db.all(sql, Email, (err, result) => {
-//             if (err) {
-//                 res.status(402).json({ "error": err.message });
-//                 return;
-//             }
-
-//             if (result.length === 0) {
-
-//                 var salt = bcrypt.genSaltSync(10);
-
-//                 var data = {
-//                     Username: Username,
-//                     Email: Email,
-//                     Password: bcrypt.hashSync(Password, salt),
-//                     Salt: salt,
-//                     DateCreated: Date('now')
-//                 }
-
-//                 var sql = 'INSERT INTO Users (Username, Email, Password, Salt, DateCreated) VALUES (?,?,?,?,?)'
-//                 var params = [data.Username, data.Email, data.Password, data.Salt, Date('now')]
-//                 var user = db.run(sql, params, function (err, innerResult) {
-//                     if (err) {
-//                         res.status(400).json({ "error": err.message })
-//                         return;
-//                     }
-
-//                 });
-//             }
-//             else {
-//                 userExists = true;
-//                 // res.status(404).send("User Already Exist. Please Login");  
-//             }
-//         });
-
-//         setTimeout(() => {
-//             if (!userExists) {
-//                 res.status(201).json("Success");
-//             } else {
-//                 res.status(201).json("Record already exists. Please login");
-//             }
-//         }, 500);
-
-
-//     } catch (err) {
-//         console.log(err);
-//     }
-// })
 
 app.post('/api/useractivity',  (req, res) => {
     const userData = req.body;
@@ -396,3 +411,4 @@ app.post("/api/test", auth, (req, res) => {
 
 
 
+app.listen(port, () => console.log(`API listening on port ${port}!`));
