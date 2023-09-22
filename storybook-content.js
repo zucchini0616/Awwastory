@@ -49,17 +49,22 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
   .catch(error => {
     console.log('Error fetching data:', error);
   });
-
-document.addEventListener('DOMContentLoaded', () => {
-  let pages;
-
-  const storedPage = localStorage.getItem('currentPage');
-  if (storedPage !== null) {
-    currentPage = parseInt(storedPage, 10);
-  }
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const storyId = urlParams.get('storyid');
+  document.addEventListener('DOMContentLoaded', () => {
+    let pages;
+  
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const storyId = urlParams.get('storyid');
+    console.log('StoryId:', storyId);
+  
+    // Retrieve the current page for the specific story from local storage
+    const storedPage = localStorage.getItem(`currentPage_${storyId}`);
+    if (storedPage !== null) {
+      currentPage = parseInt(storedPage, 10);
+    } else {
+      // Set a default value for currentPage when the entry is missing
+      currentPage = 0; // You can choose any default page number
+    }
   console.log('StoryId:', storyId);
 
   fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}`)
@@ -103,30 +108,31 @@ document.addEventListener('DOMContentLoaded', () => {
     radioForm();
     if (question[currentPage] === null) {
       nextButton.disabled = false;
+
     }
   }
   // Function to check screen orientation and display/hide the message accordingly
-// Function to check screen orientation and display/hide the message accordingly
-function checkScreenOrientation() {
-  const rotateMessage = document.getElementById('rotate-message');
-  const isMobile = window.matchMedia('(max-width: 767px)').matches;
-  const isLandscape = window.innerWidth > window.innerHeight; // Check if width > height
+  // Function to check screen orientation and display/hide the message accordingly
+  function checkScreenOrientation() {
+    const rotateMessage = document.getElementById('rotate-message');
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    const isLandscape = window.innerWidth > window.innerHeight; // Check if width > height
 
-  if (isMobile && !isLandscape) {
-    // Show the rotate message only in portrait mode on mobile devices
-    rotateMessage.style.display = 'flex';
-  } else {
-    // Hide the rotate message
-    rotateMessage.style.display = 'none';
+    if (isMobile && !isLandscape) {
+      // Show the rotate message only in portrait mode on mobile devices
+      rotateMessage.style.display = 'flex';
+    } else {
+      // Hide the rotate message
+      rotateMessage.style.display = 'none';
+    }
   }
-}
 
-// Attach an event listener for orientation change and window resize
-window.addEventListener('orientationchange', checkScreenOrientation);
-window.addEventListener('resize', checkScreenOrientation);
+  // Attach an event listener for orientation change and window resize
+  window.addEventListener('orientationchange', checkScreenOrientation);
+  window.addEventListener('resize', checkScreenOrientation);
 
-// Call the function initially to check screen orientation
-checkScreenOrientation();
+  // Call the function initially to check screen orientation
+  checkScreenOrientation();
 
 
   function goToNextPage() {
@@ -134,23 +140,23 @@ checkScreenOrientation();
       if (question[currentPage] !== null) {
         currentPage++;
         renderPage();
-        storeUserProgress();
+        sendResponseToDatabase(userResponse);
       } else {
         currentPage++;
         renderPage();
-        storeUserProgress();
       }
+      // Update and store the current page
+      storeUserProgress();
     } else {
-      // User has completed the story, display the congratulations page
-
+      window.location.href = 'summary.html';
     }
   }
-
 
   function goToPreviousPage() {
     if (currentPage > 0) {
       currentPage--;
       renderPage();
+      // Update and store the current page
       storeUserProgress();
     }
   }
@@ -158,6 +164,8 @@ checkScreenOrientation();
   function goToFirstPage() {
     currentPage = 0;
     renderPage();
+    // Update and store the current page
+    storeUserProgress();
   }
 
   function updateProgressBar() {
@@ -168,7 +176,7 @@ checkScreenOrientation();
   function getquestion() {
     const yourProgress = document.querySelector('.question');
     if (question[currentPage] !== null) {
-      yourProgress.textContent = "question: " + question[currentPage];
+      yourProgress.textContent = "Ask: " + question[currentPage];
     } else {
       yourProgress.textContent = "";
     }
@@ -177,7 +185,7 @@ checkScreenOrientation();
   function gethint() {
     const yourProgress = document.querySelector('.hint');
     if (hint[currentPage] !== null) {
-      yourProgress.textContent = "hint: " + hint[currentPage];
+      yourProgress.textContent = "Comment: " + hint[currentPage];
     } else {
       yourProgress.textContent = "";
     }
@@ -186,13 +194,13 @@ checkScreenOrientation();
   function getpop() {
     const yourProgress = document.querySelector('.pop');
     if (pop[currentPage] !== null) {
-      yourProgress.textContent = "Survey: " + pop[currentPage];
+      yourProgress.textContent = "Survey: " + pop[currentPage] + "(Please fill in before moving to the next page)";
     } else {
       yourProgress.textContent = "";
     }
   }
   function storeUserProgress() {
-    localStorage.setItem('currentPage', currentPage);
+    localStorage.setItem(`currentPage_${storyId}`, currentPage);
     console.log(currentPage)
 
   }
@@ -206,7 +214,7 @@ checkScreenOrientation();
       survey_answers: surveyAnswers, // Send the entire array
     };
 
-
+    console.log("=( whereyou go",surveydata)
 
 
     fetch('http://13.229.232.201:3000/api/useractivity', {
@@ -236,13 +244,15 @@ checkScreenOrientation();
 
   function radioForm() {
     const yourProgress = document.querySelector('.SurveyForm');
+    const validationMessage = document.getElementById('validation-message'); // Get the validation message div
     if (question[currentPage] !== null && hint[currentPage] !== null) {
       const radioContainer = document.createElement('div');
       radioContainer.className = 'form-check';
       const nextButton = document.querySelector('#next-button');
       const radioYes = createRadioButton(`page-answer`, 'Yes', 1);
       const radioNo = createRadioButton(`page-answer`, 'No', 0);
-
+      radioYes.style.transform = 'scale(1)'; // Adjust the scale factor as needed
+      radioNo.style.transform = 'scale(1)';
       radioContainer.appendChild(radioYes);
       radioContainer.appendChild(radioNo);
       yourProgress.innerHTML = '';
@@ -259,30 +269,42 @@ checkScreenOrientation();
           }
         });
       });
+
+      nextButton.addEventListener('click', () => {
+        const radioButtons = document.querySelectorAll('input[type="radio"]');
+        let userResponse = null;
+
+        radioButtons.forEach(radio => {
+          if (radio.checked) {
+            userResponse = radio.value; // Assuming you have 'value' attribute set for the radio buttons.
+          }
+        });
+
+        if (userResponse !== null) {
+          // Send userResponse to your database using a fetch request.
+          sendResponseToDatabase(userResponse);
+          // Update user's current page in local storage
+          storeUserProgress();
+          // Clear any previous validation message
+          validationMessage.textContent = '';
+                  if (currentPage < pages.length - 1) {
+          currentPage++;
+          renderPage();
+        } else {
+          // Navigate to the summary page with user responses as query parameters
+          const queryString = Object.keys(userResponses).map(key => {
+            return `${encodeURIComponent(`responses[${key}][question]`)}=${encodeURIComponent(userResponses[key].question)}&${encodeURIComponent(`responses[${key}][response]`)}=${encodeURIComponent(userResponses[key].response)}`;
+          }).join('&');
+          window.location.href = `summary.html?${queryString}`;
+        }
+        }
+      });
     } else {
       yourProgress.innerHTML = '';
     }
-    nextButton.addEventListener('click', () => {
-      const radioButtons = document.querySelectorAll('input[type="radio"]');
-      let userResponse = null;
-
-      radioButtons.forEach(radio => {
-
-        if (radio.checked) {
-          userResponse = radio.value; // Assuming you have 'value' attribute set for the radio buttons.
-
-        }
-      });
-
-      if (userResponse !== null) {
-        // Send userResponse to your database using a fetch request.
-        sendResponseToDatabase(userResponse);
-        console.log("im not getting anything here")
-        // Update user's current page in local storage
-        storeUserProgress();
-      }
-    });
   }
+
+
   $("#sidebar")
 
 

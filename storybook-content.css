@@ -2,7 +2,7 @@ body {
   background-color: #E0F2FE !important;
   height: 100vh;
   overflow-y: auto;
-  font-family: 'Cherry Bomb One', cursive !important;
+
 }
 
 .header {
@@ -15,7 +15,8 @@ body {
 #question-button,
 #homepage,
 #next-button,
-#dropdownMenuButton {
+#dropdownMenuButton ,
+#go-to-first-page,#save-and-exit-button{
   bottom: 10px;
   background-color: #35303022;
   color: white;
@@ -37,7 +38,11 @@ body {
 }
 
 
-
+#next-button{
+  text-align: center;
+margin-left:20%;
+margin-top: 10%;
+}
 
 .progress-bar-container {
   margin-left:10%;
@@ -98,16 +103,18 @@ body {
 }
 
 
-#dropdown {
+
+#go-to-first-page,#save-and-exit-button{
   position: absolute;
-  top: 10px; /* Adjust the top position as needed */
+  top: 5%; /* Adjust the top position as needed */
   right: 10px; /* Adjust the right position as needed */
   z-index: 999; /* Ensure it's above other content */
-}
-
-#dropdownMenuButton {
-  background-color: #FF8F00;
+  background-color: #35303022;
   border-radius: 130px !important;
+  z-index: 999; 
+}
+#save-and-exit-button{
+ margin-top:8%;
 }
 
 #return-button {
@@ -133,13 +140,6 @@ body {
   object-fit: cover;
 }
 
-p {
-  font-family: 'Poppins', sans-serif;
-  font-size: 1.1em;
-  font-weight: 300;
-  line-height: 1.7em;
-  color: #999;
-}
 
 a,
 a:hover,
@@ -177,13 +177,7 @@ a:focus {
 
 
 
-p {
-  font-family: 'Poppins', sans-serif;
-  font-size: 1.1em;
-  font-weight: 300;
-  line-height: 1.7em;
-  color: #999;
-}
+
 
 a,
 a:hover,
@@ -199,22 +193,6 @@ a:focus {
   border-radius: 0;
   margin-bottom: 40px;
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.navbar-btn {
-  position: absolute;
-  top: 10px;
-  left: 1500px;
-  width: 50px;
-  height: 50px;
-  background-color: #FF8F00;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform 0.3s ease;
 }
 
 .line {
@@ -267,6 +245,7 @@ a:focus {
   z-index: 999;
   overflow-y: auto;
   height: 100%;
+  font-size: 1.8vw;
 }
 
 
@@ -299,7 +278,7 @@ a:focus {
 
 #sidebar ul li a {
   padding: 10px;
-  font-size: 2em;
+  font-size: 4em;
   display: block;
 }
 
@@ -389,12 +368,13 @@ a.article:hover {
 
 .question,
 .hint,
-.survey {
+.survey,.surveyform{
   margin-left: 5%;
+  margin-top: 10%;
 }
 
-.survey {
-  margin-top: 20%;
+.pop {
+  margin-bottom: 10%;
 }
 
 
@@ -402,9 +382,7 @@ a.article:hover {
 .form-check-label{
   margin-left: 20%;
 }
-.question,.pop{
-  font-size: 18px;
-}
+
 /* Set the 2560x1600 (16:10) aspect ratio */
 .canvas-container {
   position: relative;

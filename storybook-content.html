@@ -9,8 +9,9 @@
   <link rel="stylesheet" href="storybook-content.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="https://awwastorybucket.s3.ap-southeast-1.amazonaws.com/AWWAicon.png" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.17.0/font/bootstrap-icons.css" rel="stylesheet">
 
-  
   <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
@@ -23,10 +24,7 @@
 
     <!-- Sidebar Holder -->
     <nav id="sidebar" class="active">
-      <div class="sidebar-header">
-        <h3>Try this Question!</h3>
 
-      </div>
 
       <div class="question">
         
@@ -39,6 +37,7 @@
         <div class="pop">
         </div>
         <div class="SurveyForm">
+        <div id="validation-message" style="color: red;"></div>
 
       </div>
       <button class="btn btn-primary" type="submit" id="next-button" disabled>Next</button>
@@ -61,22 +60,23 @@
 
         <div class="canvas-container">
           <div class="canvas"></div>
-          <div id="dropdown" class="dropdown">
-            <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <!-- Add your dropdown button content here, e.g., an icon -->
-            </button>
-            <div class="dropdown-menu">
-              <a class="dropdown-item  btn-floating" id="go-to-first-page" href="#">first page</a>
-              <a class="dropdown-item  btn-floating" href="#" onclick="returntomain()">save & exit</a>
-            </div>
-          </div>
+       
+           
 
         </div>
         
           <button type="button" id="return-button"><</button>
-
           <button type="button" id="question-button">></button>
-   
+     
+          <button type="button" id="go-to-first-page" class="btn btn-warning btn-floating">
+            <img src="images\rewind-fill.svg" alt="SVG Image"  style="fill: white;width: 2vw; height: 2vw;">
+
+          </button>
+          
+          <button type="button" id="save-and-exit-button" class="btn btn-primary btn-floating" onclick="returntomain()">
+            <img src="images\floppy2-fill.svg" alt="SVG Image"  style="fill: white;width: 2vw; height: 2vw;">
+          </button>
+
 
           </div>
 

@@ -1,0 +1,19 @@
+body {
+    background-color: #E0F2FE !important;
+    height: 100vh;
+    overflow-y: auto;
+  
+  }
+.container{
+    margin-left:10%;
+    margin-top:10%
+}
+.mainpagebutton{
+    border-radius: 20px !important;
+    padding: 10px 20px;
+
+    border: none;
+    background-color: rgb(254, 203, 108);
+    font-size: 20px;
+    color: #ffffff;
+}

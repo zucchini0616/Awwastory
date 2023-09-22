@@ -56,7 +56,7 @@ body {
     text-align: center;
     color: white;
     border-radius: 30px 30px 0 0;
-    position: absolute; 
+    position: fixed; 
     bottom: 0; 
     left: 0;
     width: 100%;
@@ -73,7 +73,6 @@ body {
   margin-top:5%;
   }
   .card {
- 
     background-color: #FFF;
     border-radius: 10px;
     margin: 5px;
@@ -81,8 +80,11 @@ body {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically */
+    text-align: center; /* Center text content */
   }
+  
   .story-card img {
     width: 200px;
     height: 200px;
