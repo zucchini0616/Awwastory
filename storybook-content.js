@@ -1,4 +1,5 @@
 let currentPage = 0;
+
 function setCanvasDimensions() {
   const canvasContainer = document.querySelector('.canvas-container');
   const canvas = document.querySelector('.canvas');
@@ -34,7 +35,7 @@ const urlParams = new URLSearchParams(queryString);
 const storyId = urlParams.get('storyid');
 // const userData = urlParams.get('userdata');
 
-const surveyAnswers = []; // Initialize all answers to 0
+const surveyAnswers = new Array(currentPage.length).fill(null);// Initialize all answers to 0
 
 
 const userId = localStorage.getItem('UserId');
@@ -97,6 +98,7 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
   const goToFirstPageButton = document.getElementById('go-to-first-page');
 
   function renderPage() {
+
     const pageImage = document.createElement('img');
     pageImage.src = pages[currentPage];
     canvas.innerHTML = '';
@@ -137,20 +139,24 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
 
   function goToNextPage() {
     if (currentPage < pages.length - 1) {
+      const userResponse = surveyAnswers[currentPage]; // Define userResponse here
       if (question[currentPage] !== null) {
         currentPage++;
         renderPage();
-        sendResponseToDatabase(userResponse);
       } else {
         currentPage++;
         renderPage();
       }
       // Update and store the current page
       storeUserProgress();
+      
+      // Send userResponse to your database using a fetch request.
+      sendResponseToDatabase(userResponse);
     } else {
       window.location.href = 'summary.html';
     }
   }
+  
 
   function goToPreviousPage() {
     if (currentPage > 0) {
@@ -206,7 +212,7 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
   }
   function sendResponseToDatabase(userResponse) {
     // Assuming userResponse contains the data you want to store
-    console.log("imin", userId)
+
     console.log("radiovalue=(", userResponse)
 
     const surveydata = {
@@ -244,65 +250,84 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
 
   function radioForm() {
     const yourProgress = document.querySelector('.SurveyForm');
-    const validationMessage = document.getElementById('validation-message'); // Get the validation message div
+
+    const nextButton = document.querySelector('#next-button');
+  
     if (question[currentPage] !== null && hint[currentPage] !== null) {
       const radioContainer = document.createElement('div');
       radioContainer.className = 'form-check';
-      const nextButton = document.querySelector('#next-button');
+  
       const radioYes = createRadioButton(`page-answer`, 'Yes', 1);
       const radioNo = createRadioButton(`page-answer`, 'No', 0);
+  
       radioYes.style.transform = 'scale(1)'; // Adjust the scale factor as needed
       radioNo.style.transform = 'scale(1)';
+  
       radioContainer.appendChild(radioYes);
       radioContainer.appendChild(radioNo);
+  
       yourProgress.innerHTML = '';
       yourProgress.appendChild(radioContainer);
-
-      nextButton.disabled = true;
-
+  
       const radioButtons = document.querySelectorAll('input[type="radio"]');
-      radioButtons.forEach((radio, index) => {
-        radio.addEventListener('change', () => {
-          nextButton.disabled = !Array.from(radioButtons).some(rb => rb.checked);
-          if (radio.checked) {
-            surveyAnswers[currentPage] = parseInt(radio.value, 10);
+      function handleRadioButtonChange() {
+       
+        nextButton.disabled = !Array.from(radioButtons).some(rb => rb.checked);
+    
+        const selectedRadio = Array.from(radioButtons).find(rb => rb.checked);
+    
+        if (selectedRadio) {
+          if (selectedRadio.value === '1') {
+            surveyAnswers[currentPage] = 1; // Set user response to 1 for "Yes"
+            console.log("1");
+          } else if (selectedRadio.value === '0') {
+            surveyAnswers[currentPage] = 0; // Set user response to 0 for "No"
+            console.log("0");
           }
-        });
+        } else {
+          surveyAnswers[currentPage] = null; // No option selected
+          console.log("No option selected");
+        }
+    
+        console.log("Radio Button Value Changed:", surveyAnswers[currentPage]);
+      }
+      
+      
+      
+      
+  
+      radioButtons.forEach(radio => {
+        radio.addEventListener('change', handleRadioButtonChange);
       });
-
+  
       nextButton.addEventListener('click', () => {
-        const radioButtons = document.querySelectorAll('input[type="radio"]');
-        let userResponse = null;
-
-        radioButtons.forEach(radio => {
-          if (radio.checked) {
-            userResponse = radio.value; // Assuming you have 'value' attribute set for the radio buttons.
-          }
-        });
-
+        const userResponse = surveyAnswers[currentPage];
+        console.log("User Response:", userResponse); // Corrected console.log statement
         if (userResponse !== null) {
           // Send userResponse to your database using a fetch request.
           sendResponseToDatabase(userResponse);
           // Update user's current page in local storage
           storeUserProgress();
-          // Clear any previous validation message
-          validationMessage.textContent = '';
-                  if (currentPage < pages.length - 1) {
-          currentPage++;
-          renderPage();
-        } else {
-          // Navigate to the summary page with user responses as query parameters
-          const queryString = Object.keys(userResponses).map(key => {
-            return `${encodeURIComponent(`responses[${key}][question]`)}=${encodeURIComponent(userResponses[key].question)}&${encodeURIComponent(`responses[${key}][response]`)}=${encodeURIComponent(userResponses[key].response)}`;
-          }).join('&');
-          window.location.href = `summary.html?${queryString}`;
-        }
-        }
+          
+     
+  
+          if (currentPage < pages.length - 1) {
+            renderPage();
+          } else {
+            // Navigate to the summary page with user responses as query parameters
+            const queryString = Object.keys(userResponses).map(key => {
+              return `${encodeURIComponent(`responses[${key}][question]`)}=${encodeURIComponent(userResponses[key].question)}&${encodeURIComponent(`responses[${key}][response]`)}=${encodeURIComponent(userResponses[key].response)}`;
+            }).join('&');
+            window.location.href = `summary.html?${queryString}`;
+          }
+        } 
       });
     } else {
       yourProgress.innerHTML = '';
     }
   }
+  
+  
 
 
   $("#sidebar")
