@@ -38,7 +38,7 @@ const storyId = urlParams.get('storyid');
 const surveyAnswers = new Array(currentPage.length).fill(null);// Initialize all answers to 0
 
 
-const userId = localStorage.getItem('UserId');
+const userId = localStorage.getItem('Id');
 console.log('UserId:', userId);
 console.log('StoryId:', storyId);
 
