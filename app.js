@@ -286,6 +286,20 @@ app.get("/api/storycontent/:storyid", (req, res) => {
     });
 })
 
+app.get("/api/useractivity/:user_id", (req, res) => {
+    var sql = "SELECT * FROM Useractivity where user_id=?"
+
+    db.all(sql, req.params.id, (err, rows) => {
+        if (err) {
+            res.status(400).json({ "error": err.message });
+            return;
+        }
+        res.json({
+            "message": "success",
+            "data": rows
+        })
+    });
+})
 
 
 app.post('/api/useractivity',  (req, res) => {
