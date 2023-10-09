@@ -139,12 +139,6 @@ module.exports = db3;
 module.exports = db4;
 
 
-app.use(
-    express.urlencoded(),
-    cors({
-        origin: ' http://127.0.0.1:8080'
-    })
-);
 
 app.get('/', (req, res) => res.send('API Root'));
 app.use(express.json());
@@ -300,9 +294,9 @@ app.get("/api/useractivity", (req, res) => {
     });
 })
 app.get("/api/useractivity/:user_id", (req, res) => {
-    var sql = "SELECT * FROM Useractivity where user_id=?"
+    var sql = "SELECT * FROM Useractivity WHERE user_id = ?"
 
-    db.all(sql, req.params.id, (err, rows) => {
+    db.all(sql, req.params.user_id, (err, rows) => {
         if (err) {
             res.status(400).json({ "error": err.message });
             return;
