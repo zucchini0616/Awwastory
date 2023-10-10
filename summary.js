@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     // Fetch useractivity data
-    fetch(`http://13.229.232.201:3000/api/useractivity/${userId}`)
+    fetch(`http://13.229.232.201:3000/api/useractivity/${userId}/${storyId}`)
         .then(response => response.json())
         .then(responseData => {
             const data = responseData.data;

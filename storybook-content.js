@@ -217,6 +217,7 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
 
     const surveydata = {
       user_id: parseInt(userId, 10),
+      story_id:parseInt(storyId, 10),
       survey_answers: surveyAnswers, // Send the entire array
     };
 

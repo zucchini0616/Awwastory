@@ -293,10 +293,10 @@ app.get("/api/useractivity", (req, res) => {
         })
     });
 })
-app.get("/api/useractivity/:user_id", (req, res) => {
-    var sql = "SELECT * FROM Useractivity WHERE user_id = ?"
+app.get("/api/useractivity/:user_id/storyId", (req, res) => {
+    var sql = "SELECT * FROM Useractivity WHERE user_id = ? and story_id = ?"
 
-    db.all(sql, req.params.user_id, (err, rows) => {
+    db.all(sql, req.params.user_id,req.params.storyId, (err, rows) => {
         if (err) {
             res.status(400).json({ "error": err.message });
             return;
@@ -313,11 +313,12 @@ app.post('/api/useractivity',  (req, res) => {
     const userData = req.body;
     console.log("excuseme?",req.body)
     const user_id = userData.user_id;
+    const story_id = userData.storyId;
     const surveyAnswers = userData.survey_answers;
     
     // Check if a record with the same user_id exists
-    const sql = 'SELECT * FROM Useractivity WHERE user_id = ?';
-    db3.get(sql, [user_id], (err, existingData) => {
+    const sql = 'SELECT * FROM Useractivity WHERE user_id = ? AND story_id = ?';
+    db3.get(sql, [user_id], [story_id],(err, existingData) => {
         if (err) {
             console.error('Error querying the database:', err);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -329,7 +330,7 @@ app.post('/api/useractivity',  (req, res) => {
             const updateSql = `
                 UPDATE Useractivity
                 SET survey_answers = ?
-                WHERE user_id = ?
+                WHERE user_id = ? AND story_id = ?
             `;
             const params = [
                 JSON.stringify(surveyAnswers),
@@ -347,8 +348,8 @@ app.post('/api/useractivity',  (req, res) => {
         } else {
             // No record with the same user_id exists, so insert a new record
             const insertSql = `
-                INSERT INTO Useractivity (user_id, survey_answers)
-                VALUES (?, ?)
+                INSERT INTO Useractivity (user_id, story_id,survey_answers)
+                VALUES (?, ?,?)
             `;
             const params = [
                 user_id,
