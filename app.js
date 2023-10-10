@@ -293,7 +293,7 @@ app.get("/api/useractivity", (req, res) => {
         })
     });
 })
-app.get("/api/useractivity/:user_id/storyId", (req, res) => {
+app.get("/api/useractivity/:user_id/:storyId", (req, res) => {
     var sql = "SELECT * FROM Useractivity WHERE user_id = ? and story_id = ?"
 
     db.all(sql, req.params.user_id,req.params.storyId, (err, rows) => {
@@ -334,7 +334,7 @@ app.post('/api/useractivity',  (req, res) => {
             `;
             const params = [
                 JSON.stringify(surveyAnswers),
-                user_id,
+                user_id,story_id
             ];
             db3.run(updateSql, params, (updateErr) => {
                 if (updateErr) {
@@ -352,7 +352,7 @@ app.post('/api/useractivity',  (req, res) => {
                 VALUES (?, ?,?)
             `;
             const params = [
-                user_id,
+                user_id,story_id,
                 JSON.stringify(surveyAnswers),
             ];
             db3.run(insertSql, params, (insertErr) => {
