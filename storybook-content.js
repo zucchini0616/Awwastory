@@ -98,9 +98,9 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
   const goToFirstPageButton = document.getElementById('go-to-first-page');
 
   function renderPage() {
-
     const pageImage = document.createElement('img');
     pageImage.src = pages[currentPage];
+    pageImage.className = 'canvas-transition'; // Add this line
     canvas.innerHTML = '';
     canvas.appendChild(pageImage);
     updateProgressBar();
@@ -110,9 +110,9 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
     radioForm();
     if (question[currentPage] === null) {
       nextButton.disabled = false;
-
     }
   }
+  
   // Function to check screen orientation and display/hide the message accordingly
   // Function to check screen orientation and display/hide the message accordingly
   function checkScreenOrientation() {
@@ -139,13 +139,21 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
 
   function goToNextPage() {
     if (currentPage < pages.length - 1) {
-      const userResponse = surveyAnswers[currentPage]; // Define userResponse here
+      const userResponse = surveyAnswers[currentPage];
       if (question[currentPage] !== null) {
         currentPage++;
-        renderPage();
+        canvas.style.opacity = 0; // Fade out the canvas
+        setTimeout(() => {
+          renderPage();
+          canvas.style.opacity = 1; // Fade in the new page
+        }, 500); // Delay for 0.5 seconds (you can adjust this time)
       } else {
         currentPage++;
-        renderPage();
+        canvas.style.opacity = 0;
+        setTimeout(() => {
+          renderPage();
+          canvas.style.opacity = 1;
+        }, 500);
       }
       // Update and store the current page
       storeUserProgress();
@@ -156,6 +164,8 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
       window.location.href = 'summary.html';
     }
   }
+  
+  
   
 
   function goToPreviousPage() {

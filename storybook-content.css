@@ -422,3 +422,9 @@ a.article:hover {
 #rotate-message p {
   font-size: 18px;
 }
+/* Add this to your existing CSS or create a new CSS file */
+
+.canvas {
+  left: 0;
+  transition: left 0.5s ease-in-out; /* Slide horizontally */
+}

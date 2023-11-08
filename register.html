@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Page</title>
+  <title>Registration Page</title>
   <link rel="icon" href="https://awwastorybucket.s3.ap-southeast-1.amazonaws.com/AWWAicon.png" type="image/x-icon">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="index.css">
@@ -17,15 +17,15 @@
 <body>
   <div class="container-fluid h-100">
     <div class="row h-100">
-      <!-- Left Side (Background Image) -->
-      <div class="col-md-5 p-0" style="height: 100vh;">
-        <img src="https://awwastorybucket.s3.ap-southeast-1.amazonaws.com/backg1.png" alt="Background Image" class="w-100 h-100">
-      </div>
       <!-- Right Side (Login Form) -->
       <div class="col-md-7 d-flex align-items-center justify-content-center">
         <div class="card">
-          <h4 class="mb-12 text-center">Login</h4>
-          <form id="login-form">
+          <h4 class="mb-4 text-center">Register</h4>
+          <form id="registration-form">
+            <div class="form-group">
+              <label for="username">Full Name</label>
+              <input type="text" class="form-control" id="username" required>
+            </div>
             <div class="form-group">
               <label for="email">Email</label>
               <input type="email" class="form-control" id="email" required>
@@ -34,13 +34,20 @@
               <label for="password">Password</label>
               <input type="password" class="form-control" id="password" required>
             </div>
-            
-            <button type="submit" class="btn btn-primary btn-block">Login</button>
-            <div class="card-footer text-center">
-              <p>Do not have an account? <a href="register.html">Register</a></p>
+            <div class="form-group">
+              <label for="confirm-password">Confirm Password</label>
+              <input type="password" class="form-control" id="confirm-password" required>
             </div>
+            <button type="submit" class="btn btn-success btn-block">Register</button>
+            <div class="card-footer text-center">
+                <p>Already have an account? <a href="index.html">Login here</a></p>
+              </div>
           </form>
         </div>
+      </div>
+      <!-- Left Side (Background Image) -->
+      <div class="col-md-5 p-0" style="height: 100vh;">
+        <img src="https://awwastorybucket.s3.ap-southeast-1.amazonaws.com/backg1.png" alt="Background Image" class="w-100 h-100">
       </div>
     </div>
   </div>

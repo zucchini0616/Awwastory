@@ -161,8 +161,42 @@ app.get("/api/users", (req, res, next) => {
     });
 });
 
-
-
+app.post('/api/register', (req, res) => {
+    const { username, email, password } = req.body;
+  
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: 'Please provide all required fields.' });
+    }
+  
+    // Generate a random salt
+    const salt = bcrypt.genSaltSync(10);
+  
+    // Hash the user's password using the generated salt
+    const hashedPassword = bcrypt.hashSync(password, salt);
+  
+    const sql = 'INSERT INTO Users (Username, Email, Password, Salt, DateCreated) VALUES (?, ?, ?, ?, ?)';
+    const params = [username, email, hashedPassword, salt, new Date().toISOString()];
+  
+    db.run(sql, params, function (err) {
+      if (err) {
+        return res.status(400).json({ error: err.message });
+      }
+  
+      res.json({
+        message: 'User registered successfully',
+        data: {
+          id: this.lastID,
+          username: username,
+          email: email,
+        },
+      });
+    });
+  });
+  
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+  
 app.get("/api/Stories", (req, res, next) => {
     var sql = "SELECT * FROM Stories"
     var params = []
@@ -311,14 +345,15 @@ app.get("/api/useractivity/:user_id/:storyId", (req, res) => {
 
 app.post('/api/useractivity',  (req, res) => {
     const userData = req.body;
-    console.log("excuseme?",req.body)
+    
     const user_id = userData.user_id;
     const story_id = userData.storyId;
     const surveyAnswers = userData.survey_answers;
-    
+    console.log("excuseme?",req.body)
+    console.log("excuseme 1",story_id)
     // Check if a record with the same user_id exists
     const sql = 'SELECT * FROM Useractivity WHERE user_id = ? AND story_id = ?';
-    db3.get(sql, [user_id], [story_id],(err, existingData) => {
+    db3.get(sql, [user_id,story_id],(err, existingData) => {
         if (err) {
             console.error('Error querying the database:', err);
             res.status(500).json({ error: 'Internal Server Error' });
