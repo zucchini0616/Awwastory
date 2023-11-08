@@ -33,7 +33,7 @@ function setCanvasDimensions() {
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const storyId = urlParams.get('storyid');
-// const userData = urlParams.get('userdata');
+const userData = urlParams.get('userdata');
 
 const surveyAnswers = new Array(currentPage.length).fill(null);// Initialize all answers to 0
 
@@ -53,13 +53,14 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
   document.addEventListener('DOMContentLoaded', () => {
     let pages;
   
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const storyId = urlParams.get('storyid');
-    console.log('StoryId:', storyId);
+    // const queryString = window.location.search;
+    // const urlParams = new URLSearchParams(queryString);
+    // const storyId = urlParams.get('storyid');
+
+    // console.log('StoryId:', userId);
   
     // Retrieve the current page for the specific story from local storage
-    const storedPage = localStorage.getItem(`currentPage_${storyId}`);
+    const storedPage = localStorage.getItem(`currentPage_${storyId}_${userId}`);
     if (storedPage !== null) {
       currentPage = parseInt(storedPage, 10);
     } else {
@@ -139,7 +140,7 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
 
   function goToNextPage() {
     if (currentPage < pages.length - 1) {
-      const userResponse = surveyAnswers[currentPage];
+      
       if (question[currentPage] !== null) {
         currentPage++;
         canvas.style.opacity = 0; // Fade out the canvas
@@ -159,7 +160,7 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
       storeUserProgress();
       
       // Send userResponse to your database using a fetch request.
-      sendResponseToDatabase(userResponse);
+      sendResponseToDatabase(surveyAnswers);
     } else {
       window.location.href = 'summary.html';
     }
@@ -210,53 +211,44 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
   function getpop() {
     const yourProgress = document.querySelector('.pop');
     if (pop[currentPage] !== null) {
-      yourProgress.textContent = "Survey: " + pop[currentPage] + "(Please fill in before moving to the next page)";
+      yourProgress.textContent = "Survey: " + pop[currentPage] ;
     } else {
       yourProgress.textContent = "";
     }
   }
   function storeUserProgress() {
-    localStorage.setItem(`currentPage_${storyId}`, currentPage);
+    localStorage.setItem(`currentPage_${storyId}_${userId}`, currentPage);
     console.log(currentPage)
 
   }
-  function sendResponseToDatabase(userResponse) {
-    // Assuming userResponse contains the data you want to store
-
-    console.log("radiovalue=(", userResponse)
-
+  function sendResponseToDatabase(surveyAnswers) {
     const surveydata = {
       user_id: parseInt(userId, 10),
-      story_id:parseInt(storyId, 10),
-      survey_answers: surveyAnswers, // Send the entire array
+      story_id: parseInt(storyId, 10),
+      survey_answers: surveyAnswers,
     };
-
-    console.log("=( whereyou go",surveydata)
-
-
+  
     fetch('http://13.229.232.201:3000/api/useractivity', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-
       },
-      body: JSON.stringify(surveydata), // Send the surveydata object in the request body
+      body: JSON.stringify(surveydata),
     })
       .then(response => {
-        console.log("response", surveydata);
-        console.log('Server Response:', response);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
         return response.json();
       })
       .then(responseData => {
-        console.log("responseData", surveydata);
         console.log('Response Data:', responseData);
       })
       .catch(error => {
-        console.log("error", surveydata);
-        console.log('Error sending data to the database:', error);
+        console.error('Error sending data to the database:', error);
       });
-
   }
+  
 
 
   function radioForm() {
@@ -312,11 +304,12 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
       });
   
       nextButton.addEventListener('click', () => {
-        const userResponse = surveyAnswers[currentPage];
-        console.log("User Response:", userResponse); // Corrected console.log statement
-        if (userResponse !== null) {
+      
+        console.log("User222 Response:", surveyAnswers);
+         // Corrected console.log statement
+        if (surveyAnswers !== null) {
           // Send userResponse to your database using a fetch request.
-          sendResponseToDatabase(userResponse);
+          sendResponseToDatabase(surveyAnswers);
           // Update user's current page in local storage
           storeUserProgress();
           
@@ -326,8 +319,8 @@ fetch(`http://13.229.232.201:3000/api/storycontent/${storyId}?userdata=${userId}
             renderPage();
           } else {
             // Navigate to the summary page with user responses as query parameters
-            const queryString = Object.keys(userResponses).map(key => {
-              return `${encodeURIComponent(`responses[${key}][question]`)}=${encodeURIComponent(userResponses[key].question)}&${encodeURIComponent(`responses[${key}][response]`)}=${encodeURIComponent(userResponses[key].response)}`;
+            const queryString = Object.keys(surveyAnswers).map(key => {
+              return `${encodeURIComponent(`responses[${key}][question]`)}=${encodeURIComponent(surveyAnswers[key].question)}&${encodeURIComponent(`responses[${key}][response]`)}=${encodeURIComponent(surveyAnswers[key].response)}`;
             }).join('&');
             window.location.href = `summary.html?${queryString}`;
           }

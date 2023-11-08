@@ -8,8 +8,8 @@ body {
   
   .card {
     width: 100%;
-    height: 100%;
-    padding: 340px;
+    height: 100vh;
+    padding: 200px;
     background-color: rgba(255, 255, 255, 0.925);
     border-radius: 10px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.23);
@@ -33,6 +33,12 @@ body {
     .col-md-5 {
       display: none; /* Hide the col-md-5 div on mobile devices */
     }
+    .card{
+      padding:20%;
+    }
+  }
+  @media (max-width: 1233px) {
+
     .card{
       padding:20%;
     }

@@ -174,8 +174,12 @@ app.post('/api/register', (req, res) => {
     // Hash the user's password using the generated salt
     const hashedPassword = bcrypt.hashSync(password, salt);
   
-    const sql = 'INSERT INTO Users (Username, Email, Password, Salt, DateCreated) VALUES (?, ?, ?, ?, ?)';
-    const params = [username, email, hashedPassword, salt, new Date().toISOString()];
+    // Set default values for profile picture and level
+    const defaultProfilePic = 'https://awwastorybucket.s3.ap-southeast-1.amazonaws.com/With+Text-20230910T203401Z-001/profile-icon.png';
+    const defaultLevel = 1;
+  
+    const sql = 'INSERT INTO Users (Username, Email, Password, Salt, DateCreated, ProfilePic, Lvl) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    const params = [username, email, hashedPassword, salt, new Date().toISOString(), defaultProfilePic, defaultLevel];
   
     db.run(sql, params, function (err) {
       if (err) {
@@ -188,14 +192,14 @@ app.post('/api/register', (req, res) => {
           id: this.lastID,
           username: username,
           email: email,
+          profilePic: defaultProfilePic,
+          level: defaultLevel,
         },
       });
     });
   });
   
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
+
   
 app.get("/api/Stories", (req, res, next) => {
     var sql = "SELECT * FROM Stories"
@@ -347,10 +351,10 @@ app.post('/api/useractivity',  (req, res) => {
     const userData = req.body;
     
     const user_id = userData.user_id;
-    const story_id = userData.storyId;
+    const story_id = userData.story_id;
     const surveyAnswers = userData.survey_answers;
-    console.log("excuseme?",req.body)
-    console.log("excuseme 1",story_id)
+    console.log("userData check",userData)
+    console.log("story_id check",story_id)
     // Check if a record with the same user_id exists
     const sql = 'SELECT * FROM Useractivity WHERE user_id = ? AND story_id = ?';
     db3.get(sql, [user_id,story_id],(err, existingData) => {
