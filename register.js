@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
       password: password,
     };
 
-    fetch('http://13.229.232.201:3000/api/register', {
+    fetch('http://44.210.126.123:3000/api/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

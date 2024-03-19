@@ -1,4 +1,4 @@
-fetch('http://13.229.232.201:3000/api/Stories')
+fetch('http://44.210.126.123:3000/api/Stories')
   .then(response => response.json())
   .then(data => {
     // Check if the 'data' property exists
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log("check",userId)
   if (userId) {
 
-    fetch(`http://13.229.232.201:3000/api/user/${userId}`)
+    fetch(`http://44.210.126.123:3000/api/user/${userId}`)
       .then(response => response.json())
       .then(data => {
         if ('data' in data) {
