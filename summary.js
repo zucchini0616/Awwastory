@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Fetch storycontent data
-    fetch(`http://44.210.126.123:3000/api/storycontent/${storyId}`)
+    fetch(`http://52.207.235.45:3000/api/storycontent/${storyId}`)
         .then(response => response.json())
         .then(responseData => {
             const data = responseData.data;
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     // Fetch useractivity data
-    fetch(`http://44.210.126.123:3000/api/useractivity/${userId}/${storyId}`)
+    fetch(`http://52.207.235.45:3000/api/useractivity/${userId}/${storyId}`)
         .then(response => response.json())
         .then(responseData => {
             const data = responseData.data;

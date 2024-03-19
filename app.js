@@ -20,7 +20,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
     else {
         var salt = bcrypt.genSaltSync(10);
 
-        console.log("where r you 1")
+        console.log("database used")
         db.run(`CREATE TABLE Users (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             Username text, 
@@ -35,7 +35,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             )`,
             (err) => {
                 if (err) {
-                    console.log("where r you2")
+                
                     
                     // Table already created
                 } else {

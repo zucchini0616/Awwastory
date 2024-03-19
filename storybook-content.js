@@ -42,7 +42,7 @@ const userId = localStorage.getItem('Id');
 console.log('UserId:', userId);
 console.log('StoryId:', storyId);
 
-fetch(`http://44.210.126.123:3000/api/storycontent/${storyId}?userdata=${userId}`)
+fetch(`http://52.207.235.45:3000/api/storycontent/${storyId}?userdata=${userId}`)
   .then(response => response.json())
   .then(responseData => {
     // Rest of your code to handle the API response
@@ -69,7 +69,7 @@ fetch(`http://44.210.126.123:3000/api/storycontent/${storyId}?userdata=${userId}
     }
   console.log('StoryId:', storyId);
 
-  fetch(`http://44.210.126.123:3000/api/storycontent/${storyId}`)
+  fetch(`http://52.207.235.45:3000/api/storycontent/${storyId}`)
     .then(response => response.json())
     .then(responseData => {
       const data = responseData.data;
@@ -228,7 +228,7 @@ fetch(`http://44.210.126.123:3000/api/storycontent/${storyId}?userdata=${userId}
       survey_answers: surveyAnswers,
     };
   
-    fetch('http://44.210.126.123:3000/api/useractivity', {
+    fetch('http://52.207.235.45:3000/api/useractivity', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
