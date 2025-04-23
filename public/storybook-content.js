@@ -39,10 +39,9 @@ const surveyAnswers = new Array(currentPage.length).fill(null);// Initialize all
 
 
 const userId = localStorage.getItem('Id');
-console.log('UserId:', userId);
-console.log('StoryId:', storyId);
 
-fetch(`http://52.207.235.45:3000/api/storycontent/${storyId}?userdata=${userId}`)
+
+fetch(`http://localhost:3000/api/storycontent/${storyId}?userdata=${userId}`)
   .then(response => response.json())
   .then(responseData => {
     // Rest of your code to handle the API response
@@ -57,7 +56,7 @@ fetch(`http://52.207.235.45:3000/api/storycontent/${storyId}?userdata=${userId}`
     // const urlParams = new URLSearchParams(queryString);
     // const storyId = urlParams.get('storyid');
 
-    // console.log('StoryId:', userId);
+
   
     // Retrieve the current page for the specific story from local storage
     const storedPage = localStorage.getItem(`currentPage_${storyId}_${userId}`);
@@ -67,20 +66,20 @@ fetch(`http://52.207.235.45:3000/api/storycontent/${storyId}?userdata=${userId}`
       // Set a default value for currentPage when the entry is missing
       currentPage = 0; // You can choose any default page number
     }
-  console.log('StoryId:', storyId);
 
-  fetch(`http://52.207.235.45:3000/api/storycontent/${storyId}`)
+
+  fetch(`http://localhost:3000/api/storycontent/${storyId}`)
     .then(response => response.json())
     .then(responseData => {
       const data = responseData.data;
-      console.log("story", data);
+    
 
       pages = data.map(item => item.content);
       text = data.map(item => item.contenttxt);
       question = data.map(item => item.lvl1Question);
       hint = data.map(item => item.Hint1);
       pop = data.map(item => item.pop1);
-      console.log(question)
+  
 
       renderPage();
 
@@ -114,7 +113,6 @@ fetch(`http://52.207.235.45:3000/api/storycontent/${storyId}?userdata=${userId}`
     }
   }
   
-  // Function to check screen orientation and display/hide the message accordingly
   // Function to check screen orientation and display/hide the message accordingly
   function checkScreenOrientation() {
     const rotateMessage = document.getElementById('rotate-message');
@@ -218,7 +216,7 @@ fetch(`http://52.207.235.45:3000/api/storycontent/${storyId}?userdata=${userId}`
   }
   function storeUserProgress() {
     localStorage.setItem(`currentPage_${storyId}_${userId}`, currentPage);
-    console.log(currentPage)
+   
 
   }
   function sendResponseToDatabase(surveyAnswers) {
@@ -228,7 +226,7 @@ fetch(`http://52.207.235.45:3000/api/storycontent/${storyId}?userdata=${userId}`
       survey_answers: surveyAnswers,
     };
   
-    fetch('http://52.207.235.45:3000/api/useractivity', {
+    fetch('http://localhost:3000/api/useractivity', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -242,7 +240,7 @@ fetch(`http://52.207.235.45:3000/api/storycontent/${storyId}?userdata=${userId}`
         return response.json();
       })
       .then(responseData => {
-        console.log('Response Data:', responseData);
+   
       })
       .catch(error => {
         console.error('Error sending data to the database:', error);
@@ -282,10 +280,10 @@ fetch(`http://52.207.235.45:3000/api/storycontent/${storyId}?userdata=${userId}`
         if (selectedRadio) {
           if (selectedRadio.value === '1') {
             surveyAnswers[currentPage] = 1; // Set user response to 1 for "Yes"
-            console.log("1");
+          
           } else if (selectedRadio.value === '0') {
             surveyAnswers[currentPage] = 0; // Set user response to 0 for "No"
-            console.log("0");
+         
           }
         } else {
           surveyAnswers[currentPage] = null; // No option selected
@@ -305,7 +303,7 @@ fetch(`http://52.207.235.45:3000/api/storycontent/${storyId}?userdata=${userId}`
   
       nextButton.addEventListener('click', () => {
       
-        console.log("User222 Response:", surveyAnswers);
+     
          // Corrected console.log statement
         if (surveyAnswers !== null) {
           // Send userResponse to your database using a fetch request.

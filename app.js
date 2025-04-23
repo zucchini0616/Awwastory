@@ -8,6 +8,9 @@ const cors = require('cors');
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 const DBSOURCE = "usersdb.sqlite";
+const path = require('path');
+
+
 
 const auth = require("./middleware");
 
@@ -20,7 +23,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
     else {
         var salt = bcrypt.genSaltSync(10);
 
-        console.log("database used")
+     
         db.run(`CREATE TABLE Users (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             Username text, 
@@ -40,7 +43,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                     // Table already created
                 } else {
                     // Table just created, creating some rows
-                    console.log("where r you")
+                 
                     var insert = 'INSERT INTO Users (Username, Email, Password,Lvl,Profilepic, Salt, DateCreated) VALUES (?,?,?,?,?,?,?)'
                     db.run(insert, ["user1", "user1@example.com", bcrypt.hashSync("user1password", salt),1,"",salt, Date('now')])
                     db.run(insert, ["user2", "user2@example.com", bcrypt.hashSync("user2password", salt),1,"", salt, Date('now')])
@@ -66,7 +69,7 @@ let db2 = new sqlite3.Database(DBSOURCE, (err) => {
         `,
             (err) => {
                 if (err) {
-                    console.log("hihi come here")
+                 
                     // Table already created
                 } else {
                  
@@ -175,7 +178,7 @@ app.post('/api/register', (req, res) => {
     const hashedPassword = bcrypt.hashSync(password, salt);
   
     // Set default values for profile picture and level
-    const defaultProfilePic = 'https://awwastorybucket.s3.ap-southeast-1.amazonaws.com/With+Text-20230910T203401Z-001/profile-icon.png';
+    const defaultProfilePic = 'images/profile-icon.png';
     const defaultLevel = 1;
   
     const sql = 'INSERT INTO Users (Username, Email, Password, Salt, DateCreated, ProfilePic, Lvl) VALUES (?, ?, ?, ?, ?, ?, ?)';
@@ -353,8 +356,7 @@ app.post('/api/useractivity',  (req, res) => {
     const user_id = userData.user_id;
     const story_id = userData.story_id;
     const surveyAnswers = userData.survey_answers;
-    console.log("userData check",userData)
-    console.log("story_id check",story_id)
+ 
     // Check if a record with the same user_id exists
     const sql = 'SELECT * FROM Useractivity WHERE user_id = ? AND story_id = ?';
     db3.get(sql, [user_id,story_id],(err, existingData) => {
@@ -424,7 +426,7 @@ app.post("/api/login", async (req, res) => {
 
         var sql = "SELECT * FROM Users WHERE Email = ?";
         db.all(sql, Email, function (err, rows) {
-            console.log("hi1", Password, user)
+       
             if (err) {
                 res.status(400).json({ "error": err.message })
                 return;
@@ -434,7 +436,7 @@ app.post("/api/login", async (req, res) => {
                 user.push(row);
 
             })
-            console.log("hi", Password, user[0])
+       
             var PHash = bcrypt.hashSync(Password, user[0].Salt);
 
             if (PHash === user[0].Password) {
@@ -464,12 +466,18 @@ app.post("/api/login", async (req, res) => {
 //question
 
 
-// * T E S T  
+// // * T E S T  
 
-app.post("/api/test", auth, (req, res) => {
-    res.status(200).send("Token Works - Yay!");
+// app.post("/api/test", auth, (req, res) => {
+//     res.status(200).send("Token Works - Yay!");
+// });
+// 1. Point Express at your static folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// 2. Fallback all other routes to index.html (for SPAs)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-
 
 
 

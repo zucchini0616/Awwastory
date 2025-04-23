@@ -1,4 +1,4 @@
-fetch('http://52.207.235.45:3000/api/Stories')
+fetch('http://localhost:3000/api/Stories')
   .then(response => response.json())
   .then(data => {
     // Check if the 'data' property exists
@@ -7,7 +7,7 @@ fetch('http://52.207.235.45:3000/api/Stories')
       const stories = data.data;
 
       // Process the received data
-      console.log(stories); // Display the data in the console
+
 
       // Get the container where you want to display the story cards
       const container = document.querySelector('.container');
@@ -51,7 +51,7 @@ fetch('http://52.207.235.45:3000/api/Stories')
         // Add a click event listener to the button
         button.addEventListener('click', () => {
           const storyId = button.dataset.storyid;
-          console.log('Clicked Read Me button for storyid:', storyId);
+     
           storybookcontent(storyId);
           // window.location.href = "/storybook-content.html";
         });
@@ -85,7 +85,7 @@ fetch('http://52.207.235.45:3000/api/Stories')
   });
   function storybookcontent(storyId) {
     // Store the storyId in your desired location, such as in the database or in a variable for further processing
-    console.log('StoryId:', storyId);
+  
     
     // Navigate to the story content page, passing the storyId as a query parameter
     window.location.href = `/storybook-content.html?storyid=${storyId}`;
@@ -103,10 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Replace USER_ID with the actual user ID of the logged-in user
   const userId = localStorage.getItem('Id');
   
-  console.log("check",userId)
+
   if (userId) {
 
-    fetch(`http://52.207.235.45:3000/api/user/${userId}`)
+    fetch(`http://localhost:3000/api/user/${userId}`)
       .then(response => response.json())
       .then(data => {
         if ('data' in data) {
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // Get the value of the 'data' property
 
           // Process the received data
-          console.log("see here", userData); // Display the data in the console
+
           // Update the username in the frontend
           const usernameElement = document.querySelector('.Username');
           usernameElement.textContent = `${userData[0].Username} !`;
@@ -144,18 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const logoutButton = document.querySelector('.logout-button');
   logoutButton.addEventListener('click', logout);
 });
-//..............................................................
-// fetch(`http://localhost:3004/api/storycontent/${storyId}`)
-// .then(response => response.json())
-// const progressBar = document.querySelector('.progress-bar');
-// function updateProgressBar() {
-//   const progress = ((currentPage + 1) / pages.length) * 100;
-//   progressBar.style.width = `${progress}%`;
-  
 
-//   const yourProgress = document.querySelector('.your-progress');
-//   yourProgress.textContent = text[currentPage];
-// }
 
 // mainpage.js
 function storybookcontent(storyId, userId) {
@@ -163,7 +152,7 @@ function storybookcontent(storyId, userId) {
   // Store the storyId and userData in localStorage
   localStorage.setItem('StoryId', storyId);
   
-  console.log("helllllllllppppppppp",userId)
+
   // Navigate to the story content page
   window.location.href = `/storybook-content.html?storyid=${storyId}`;
 }

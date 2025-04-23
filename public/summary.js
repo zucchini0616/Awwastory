@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Fetch storycontent data
-    fetch(`http://52.207.235.45:3000/api/storycontent/${storyId}`)
+    fetch(`http://localhost:3000/api/storycontent/${storyId}`)
         .then(response => response.json())
         .then(responseData => {
             const data = responseData.data;
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     // Fetch useractivity data
-    fetch(`http://52.207.235.45:3000/api/useractivity/${userId}/${storyId}`)
+    fetch(`http://localhost:3000/api/useractivity/${userId}/${storyId}`)
         .then(response => response.json())
         .then(responseData => {
             const data = responseData.data;
@@ -71,18 +71,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // Parse the JSON string into an array
             const resultArray = JSON.parse(jsonString).filter(item => item !== null);
 
-            console.log(resultArray);
+     
 
             // Select all card-body elements
             // Select all existing card-body elements
             const cardBodies = document.querySelectorAll('.card-body');
 
             for (let i = 0; i < resultArray.length; i++) {
-                console.log("hhi");
+              
                 const item = resultArray[i];
-                console.log("item:", item);
+            
                 if (item !== null) {
-                    console.log('Entering if block for item:', item);
+                
             
                     // Create a new card-body element if it doesn't exist
                     let cardBody = cardBodies[i];
@@ -102,9 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         card.appendChild(cardBody);
                     }
             
-                    console.log('hihi', item);
+                
                 } else {
-                    console.log('Skipping item:', item);
+                    console.log('Skipping item');
                 }
             }
 
