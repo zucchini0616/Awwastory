@@ -14,6 +14,25 @@ const path = require('path');
 
 const auth = require("./middleware");
 
+
+// function adminAuth(req, res, next) {
+//   const authHeader = req.headers.authorization || '';            // e.g. "Bearer xxxx"
+//   const token      = authHeader.split(' ')[1];
+//   if (!token) {
+//     return res.status(401).json({ error: 'Admin token required' });
+//   }
+//   try {
+//     const decoded = jwt.verify(token, process.env.TOKEN_KEY);
+//     if (decoded.username !== 'awwastoryadmin') {
+//       return res.status(403).json({ error: 'Forbidden: admin only' });
+//     }
+//     req.user = decoded;
+//     next();
+//   } catch (err) {
+//     return res.status(401).json({ error: 'Invalid admin token' });
+//   }
+// }
+
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
         // Cannot open database
@@ -350,119 +369,268 @@ app.get("/api/useractivity/:user_id/:storyId", (req, res) => {
 })
 
 
-app.post('/api/useractivity',  (req, res) => {
-    const userData = req.body;
-    
-    const user_id = userData.user_id;
-    const story_id = userData.story_id;
-    const surveyAnswers = userData.survey_answers;
- 
-    // Check if a record with the same user_id exists
-    const sql = 'SELECT * FROM Useractivity WHERE user_id = ? AND story_id = ?';
-    db3.get(sql, [user_id,story_id],(err, existingData) => {
-        if (err) {
-            console.error('Error querying the database:', err);
-            res.status(500).json({ error: 'Internal Server Error' });
-            return;
-        }
-
-        if (existingData) {
-            // A record with the same user_id exists, so update it
-            const updateSql = `
-                UPDATE Useractivity
-                SET survey_answers = ?
-                WHERE user_id = ? AND story_id = ?
-            `;
-            const params = [
-                JSON.stringify(surveyAnswers),
-                user_id,story_id
-            ];
-            db3.run(updateSql, params, (updateErr) => {
-                if (updateErr) {
-                    console.error('Error updating data in the database:', updateErr);
-                    res.status(500).json({ error: 'Internal Server Error' });
-                } else {
-                    console.log('Data updated successfully');
-                    res.status(200).json({ message: 'Data updated successfully' });
-                }
-            });
-        } else {
-            // No record with the same user_id exists, so insert a new record
-            const insertSql = `
-                INSERT INTO Useractivity (user_id, story_id,survey_answers)
-                VALUES (?, ?,?)
-            `;
-            const params = [
-                user_id,story_id,
-                JSON.stringify(surveyAnswers),
-            ];
-            db3.run(insertSql, params, (insertErr) => {
-                if (insertErr) {
-                    console.error('Error inserting data into the database:', insertErr);
-                    res.status(500).json({ error: 'Internal Server Error' });
-                } else {
-                    console.log('Data inserted successfully');
-                    res.status(200).json({ message: 'Data inserted successfully' });
-                }
-            });
-        }
+app.post('/api/useractivity', (req, res) => {
+    const { user_id, story_id, survey_answers } = req.body;
+  
+    // Check if a record with the same user_id & story_id exists
+    const sql = `SELECT * FROM Useractivity WHERE user_id = ? AND story_id = ?`;
+    db3.get(sql, [user_id, story_id], (err, existingData) => {
+      if (err) {
+        console.error('Error querying Useractivity:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+  
+      if (existingData) {
+        // Update survey_answers and set new timestamp
+        const updateSql = `
+          UPDATE Useractivity
+             SET survey_answers = ?,
+                 activity_timestamp = CURRENT_TIMESTAMP
+           WHERE user_id = ? AND story_id = ?
+        `;
+        const params = [
+          JSON.stringify(survey_answers),
+          user_id,
+          story_id
+        ];
+        db3.run(updateSql, params, function(updateErr) {
+          if (updateErr) {
+            console.error('Error updating Useractivity:', updateErr);
+            return res.status(500).json({ error: 'Internal Server Error' });
+          }
+          console.log('Useractivity updated successfully');
+          res.json({ message: 'Progress updated', changes: this.changes });
+        });
+  
+      } else {
+        // Insert new record (timestamp defaults via CURRENT_TIMESTAMP)
+        const insertSql = `
+          INSERT INTO Useractivity
+            (user_id, story_id, survey_answers, activity_timestamp)
+          VALUES
+            (?, ?, ?, CURRENT_TIMESTAMP)
+        `;
+        const params = [
+          user_id,
+          story_id,
+          JSON.stringify(survey_answers)
+        ];
+        db3.run(insertSql, params, function(insertErr) {
+          if (insertErr) {
+            console.error('Error inserting into Useractivity:', insertErr);
+            return res.status(500).json({ error: 'Internal Server Error' });
+          }
+          console.log('Useractivity inserted successfully');
+          res.json({ message: 'Progress recorded', id: this.lastID });
+        });
+      }
     });
-});
+  });
+  
 
   
 
 // * L O G I N
 
 app.post("/api/login", async (req, res) => {
-
     try {
-        const { Email, Password } = req.body;
-        // Make sure there is an Email and Password in the request
-        if (!(Email && Password)) {
-            res.status(400).send("All input is required");
+      const { Email, Password } = req.body;
+      if (!Email || !Password) {
+        return res.status(400).json({ error: "Email and password are required" });
+      }
+  
+      // Fetch the user by email
+      db.get(
+        `SELECT * FROM Users WHERE Email = ?`,
+        [Email],
+        (err, user) => {
+          if (err) {
+            console.error("DB error:", err);
+            return res.status(500).json({ error: "Internal server error" });
+          }
+  
+          // No such user?
+          if (!user || !user.Salt || !user.Password) {
+            return res.status(400).json({ error: "Incorrect username or password" });
+          }
+  
+          // Hash the incoming password with their salt
+          const PHash = bcrypt.hashSync(Password, user.Salt);
+  
+          if (PHash !== user.Password) {
+            // Wrong password
+            return res.status(400).json({ error: "Incorrect username or password" });
+          }
+  
+          // Generate JWT
+          const token = jwt.sign(
+            { user_id: user.Id, username: user.Username, Email },
+            process.env.TOKEN_KEY,
+            { expiresIn: "1h" }
+          );
+  
+          // Update the user record with the new token and login time (optional)
+          db.run(
+            `UPDATE Users SET Token = ?, DateLoggedIn = CURRENT_TIMESTAMP WHERE Id = ?`,
+            [token, user.Id],
+            err => {
+              if (err) console.error("Failed to update login time:", err);
+            }
+          );
+  
+          // Return user data + token
+          return res.json({
+            message: "Login successful",
+            data: {
+              Id: user.Id,
+              Username: user.Username,
+              Email: user.Email,
+              Lvl: user.Lvl,
+              Token: token
+            }
+          });
         }
-
-        let user = [];
-
-        var sql = "SELECT * FROM Users WHERE Email = ?";
-        db.all(sql, Email, function (err, rows) {
-       
-            if (err) {
-                res.status(400).json({ "error": err.message })
-                return;
-            }
-
-            rows.forEach(function (row) {
-                user.push(row);
-
-            })
-       
-            var PHash = bcrypt.hashSync(Password, user[0].Salt);
-
-            if (PHash === user[0].Password) {
-                // * CREATE JWT TOKEN
-                const token = jwt.sign(
-                    { user_id: user[0].Id, username: user[0].Username, Email },
-                    process.env.TOKEN_KEY,
-                    {
-                        expiresIn: "1h", // 60s = 60 seconds - (60m = 60 minutes, 2h = 2 hours, 2d = 2 days)
-                    }
-                );
-
-                user[0].Token = token;
-
-            } else {
-                return res.status(400).send("No Match");
-            }
-
-            return res.status(200).send(user);
-        });
-
+      );
     } catch (err) {
-        console.log(err);
+      console.error("Unexpected error in /api/login:", err);
+      return res.status(500).json({ error: "Internal server error" });
     }
-});
+  });
+// ─── ADMIN ROUTES ──────────────────────────────────────────────────────────
+// List all users
+app.get('/api/admin/users', (req, res) => {
+    db.all(
+      'SELECT Id, Username, Email, Lvl, DateCreated FROM Users',
+      [],
+      (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ data: rows });
+      }
+    );
+  });
+// app.js
 
+// app.js (excerpt)
+
+app.get('/api/admin/useractivity', (req, res) => {
+    const sql = `
+      SELECT DISTINCT
+        UA.user_id,
+        U.Username,
+        UA.story_id,
+        S.storyname,
+        UA.survey_answers,
+        UA.activity_timestamp,
+        (
+          -- get each pop1 once, in pageid order
+          SELECT GROUP_CONCAT(sub.pop1, '|||')
+          FROM (
+            SELECT pop1, MIN(pageid) AS pageid
+            FROM Storycontent
+            WHERE storyid = UA.story_id
+              AND pop1 IS NOT NULL
+            GROUP BY pop1
+            ORDER BY pageid
+          ) AS sub
+        ) AS questions
+      FROM Useractivity UA
+      JOIN Users   U ON U.Id      = UA.user_id
+      JOIN Stories S ON S.storyid = UA.story_id
+      ORDER BY UA.activity_timestamp DESC
+    `;
+  
+    db.all(sql, [], (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+  
+      const data = rows.map(r => ({
+        user_id:            r.user_id,
+        Username:           r.Username,
+        story_id:           r.story_id,
+        storyname:          r.storyname,
+        survey_answers:     JSON.parse(r.survey_answers || '[]'),
+        activity_timestamp: r.activity_timestamp,
+        questions:          r.questions
+                              ? r.questions.split('|||').filter(q => q.trim())
+                              : []
+      }));
+  
+      res.json({ data });
+    });
+  });
+  
+  
+  
+  // Delete a user
+  app.delete('/api/admin/users/:id', (req, res) => {
+    const id = req.params.id;
+    db.serialize(() => {
+      db.run('BEGIN TRANSACTION;');
+  
+      // 1) delete any progress records
+      db.run(
+        'DELETE FROM Useractivity WHERE user_id = ?;',
+        [id],
+        function(err) {
+          if (err) {
+            db.run('ROLLBACK;');
+            return res.status(500).json({ error: err.message });
+          }
+        }
+      );
+  
+      // 2) delete the user
+      db.run(
+        'DELETE FROM Users WHERE Id = ?;',
+        [id],
+        function(err) {
+          if (err) {
+            db.run('ROLLBACK;');
+            return res.status(500).json({ error: err.message });
+          }
+          db.run('COMMIT;');
+          res.json({
+            message:    'User and progress deleted',
+            changes:    this.changes
+          });
+        }
+      );
+    });
+  });
+  
+  // Edit/update a user
+  app.put('/api/admin/users/:id', (req, res) => {
+    const id = req.params.id;
+    const { Username, Email, Lvl } = req.body;
+    db.run(
+      `UPDATE Users
+          SET Username = ?,
+              Email    = ?,
+              Lvl      = ?
+        WHERE Id = ?`,
+      [Username, Email, Lvl, id],
+      function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: 'User updated', changes: this.changes });
+      }
+    );
+  });
+  
+  // Later: change story URL
+  app.put('/api/admin/stories/:id/url', (req, res) => {
+    const id = req.params.id;
+    const { url } = req.body;
+    db.run(
+      `UPDATE Stories
+          SET coverpage = ?
+        WHERE storyid = ?`,
+      [url, id],
+      function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: 'Story URL updated', changes: this.changes });
+      }
+    );
+  });
+  
 //question
 
 
