@@ -7,8 +7,6 @@ A simple Express + SQLite API with a static front-end for interactive storybooks
 - 🚀 **Express** server providing RESTful API endpoints
 - 📦 **SQLite** as a lightweight embedded database
 - 🎨 Static front-end served from `/public`
-- 🔒 JWT-based authentication (register, login, protected test route)
-- 📚 Story management: list stories, read content pages
 
 ## Repository
 
@@ -43,5 +41,5 @@ npm start
 ```
 5. Verify
 ```bash
-curl http://localhost:3000/
+http://localhost:3000/index.html
 ```
